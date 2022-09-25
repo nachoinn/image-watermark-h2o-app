@@ -2,6 +2,7 @@ from tkinter import Tk, filedialog, Canvas, PhotoImage, Label, ttk, Button, IntV
 from tkinter import messagebox
 from image_processing import ImageProcess
 from data import DataManager
+from PIL import Image, ImageTk
 
 FONT1 = ("Arial", 20, "italic")
 FONT2 = ("Arial", 12, "bold")
@@ -30,10 +31,29 @@ class AppInterface:
 
         self.load_water = Button(text="Load Watermark 💧", bd=0, activebackground=THEME_COLOR[0],
                                  highlightthickness=0, command=self.load_watermark)
-        self.load_water.grid(column=0, row=2, padx=50, pady=20)
+        self.load_water.grid(column=0, row=2, padx=50)
 
         self.watermark_canvas = Canvas(self.window, height=100, width=100, bg=THEME_COLOR[0], highlightthickness=0)
+        self.watermark_canvas.grid(column=0, row=3, pady=10)
+        try:
+            watermark = self.data.reading_data("watermark")
+            pil_image = Image.open(watermark).resize((100, 100))
+            watermark = ImageTk.PhotoImage(pil_image)
+            self.watermark_canvas.create_image(50, 50, image=watermark)
+        except AttributeError:
+            pass
 
+        self.image_canvas = Canvas(self.window, height=330, width=450, bg=THEME_COLOR[0], highlightthickness=0)
+        self.image_canvas.grid(column=1, row=1,columnspan=5, rowspan=3, pady=20, padx=20)
+        try:
+            image = self.data.reading_data("images")[0]
+            pil_image = Image.open(image).resize((330, 450))
+            image = ImageTk.PhotoImage(pil_image)
+            self.image_canvas.create_image(225, 165, image=image)
+        except IndexError:
+            pass
+        except AttributeError:
+            pass
 
         self.position = IntVar()
         self.top_left = Radiobutton(text="Top Left Corner", bd=0, activebackground=THEME_COLOR[0], value=1,
@@ -57,7 +77,7 @@ class AppInterface:
 
         self.insert_water = Button(text="Insert watermark 💧", bd=0, activebackground=THEME_COLOR[0],
                                    highlightthickness=0, command=self.insert_water_button)
-        self.insert_water.grid(column=0, row=3, padx=20, pady=20)
+        self.insert_water.grid(column=6, row=1, padx=20, pady=20)
 
         self.window.mainloop()
 
@@ -69,6 +89,8 @@ class AppInterface:
         print(images)
         if not images:
             messagebox.showerror(title="Error", message="You must select at least one image to insert a watermark to.")
+        else:
+            self.preview_image()
 
     def load_watermark(self):
         """Loads watermark and returns a path location string."""
@@ -87,16 +109,19 @@ class AppInterface:
                 "watermark": file_path.name
             }
             self.data.save_data(save_path)
+            self.preview_watermark()
             return file_path.name
 
     def insert_water_button(self):
         watermark_path = self.data.reading_data("watermark")
         if not watermark_path:
             watermark_path = self.load_watermark()
-        if not watermark_path or not self.data.reading_data("images"):
+        elif not watermark_path or not self.data.reading_data("images"):
             messagebox.showerror(title="Error",
                                  message="You must select an image and watermark files to insert a watermark")
-        self.image_process.insert_watermark(watermark_path)
+        processed = self.image_process.insert_watermark(watermark_path)
+        if processed:
+            self.preview_image()
 
     def set_position(self):
         position = {
@@ -111,3 +136,26 @@ class AppInterface:
             "opacity": opac
         }
         self.data.save_data(opacity)
+
+    def preview_watermark(self):
+        self.watermark_canvas = Canvas(self.window, height=100, width=100, bg=THEME_COLOR[0], highlightthickness=0)
+        self.watermark_canvas.grid(column=0, row=3, pady=10)
+        watermark = ImageTk.PhotoImage(Image.open(self.data.reading_data("watermark")).resize((100, 100)))
+        self.watermark_canvas.create_image(50, 50, image=watermark)
+        self.watermark_canvas.mainloop()
+
+    def preview_image(self):
+        self.image_canvas = Canvas(self.window, height=330, width=450, bg=THEME_COLOR[0], highlightthickness=0)
+        self.image_canvas.grid(column=1, row=1, columnspan=5, rowspan=3, pady=20, padx=20)
+        image = self.data.reading_data("images")
+        if type(image) == list:
+            image = image[0]
+        if image:
+            pil_image = Image.open(image).resize((330, 450))
+            image = ImageTk.PhotoImage(pil_image)
+            self.image_canvas.create_image(225, 165, image=image)
+            self.image_canvas.mainloop()
+
+
+
+

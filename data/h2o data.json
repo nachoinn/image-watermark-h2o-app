@@ -1,8 +1,8 @@
 {
     "images": "",
     "watermark": "C:/Users/nw_na/PycharmProjects/image-wattermarking-app/images/logo svd.png",
-    "opacity": 53,
-    "position": 5,
+    "opacity": 0,
+    "position": 1,
     "out_folder": "output images",
     "format": "jpeg"
 }

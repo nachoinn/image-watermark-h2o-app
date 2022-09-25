@@ -44,6 +44,7 @@ class ImageProcess:
                     im1.save(f'{self.data.output_folder()}/{new_name}.{format_}', format=format_)
                     self.data.del_data("images")
                 os.remove(new_temp_path)
+                return True
 
             else:
                 return "Images"
