@@ -21,6 +21,8 @@ class DataManager:
             with open("data/h2o data.json", "r") as def_:
                 json.load(def_)
         except FileNotFoundError:
+            if not os.path.exists("data"):
+                os.makedirs("data")
             with open("data/h2o data.json", "w") as data_error:
                 json.dump(default, data_error, indent=4)
 
