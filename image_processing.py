@@ -1,7 +1,7 @@
 from PIL import Image
 from data import DataManager
 import json
-import os
+from tkinter import messagebox
 
 
 class ImageProcess:
@@ -22,32 +22,40 @@ class ImageProcess:
             images = json.load(data)
             return images["images"]
 
-    def insert_watermark(self, watermark_path):
+    def insert_watermark(self, watermark_path, preview_mode=False):
+        preview_list = []
         format_ = self.data.reading_data("format")
-        with open("data/h2o data.json") as data:
-            data_file = json.load(data)
-            if data_file["images"]:
-                with self.image.open(watermark_path) as im2:
-                    new_temp_path = watermark_path[:-4] + " temp.png"  # temporal modified watermark
-                    im3 = im2.copy()
-                    im3.putalpha(self.data.reading_data("opacity"))
+        images = self.data.reading_data("images")
+        if images:
+            with self.image.open(watermark_path) as im2:
+                im2 = self.resize_watermark(im2)
+                im3 = im2.copy()
+                im3.putalpha(self.data.reading_data("opacity"))
+                im3.convert("RGBA")
+                im2.convert("RGBA")
+                try:
                     im2.paste(im3, im2)
-                    im2.save(new_temp_path)
-                    im2 = self.image.open(new_temp_path)
-                    im2 = im2.convert("RGBA")
+                except ValueError:
+                    messagebox.showerror(title="Error", message="Your watermark should have transparent background.")
+            print("loaded imgs list:", images)
+            for im in images:
+                im1 = self.image.open(im)
+                im1.convert("RGBA")
+                try:
+                    im1.paste(im2, self.position(im1, im2), mask=im2)
+                except ValueError:
+                    im1.paste(im2, self.position(im1, im2))
 
-                for im in data_file["images"]:
-                    im1 = self.image.open(im)
-                    im1.convert("RGBA")
-                    im1.paste(im2, self.position(im1,im2), mask=im2)
+                if not preview_mode:
                     new_name = (im.split("/")[-1].split(".")[0] + " by H2O Mark")
                     im1.save(f'{self.data.output_folder()}/{new_name}.{format_}', format=format_)
                     self.data.del_data("images")
-                os.remove(new_temp_path)
-                return True
+                else:
+                    preview_list.append(im1)
+            return preview_list
 
-            else:
-                return "Images"
+        else:
+            return False
 
     def position(self, im1, im2):
         position = self.data.reading_data("position")
@@ -72,3 +80,12 @@ class ImageProcess:
             height = (im1.height - im2.height)
 
         return (width, height)
+
+    def resize_watermark(self, im2):
+        size = int(self.data.reading_data("size"))
+        if size == 100:
+            return im2
+        else:
+            new_size = tuple(int((size / 100) * item) for item in im2.size)
+            new_water = im2.resize(new_size)
+            return new_water

@@ -1,13 +1,16 @@
 import json
 import os
 
+
 default = {
         "images": [],
         "watermark": "",
-        "transparency": 50,
+        "opacity": 50,
         "position": 3,
         "out_folder": "output images",
-        "format": "jpeg"
+        "format": "jpeg",
+        "size": "100",
+        "select": 0,
     }
 
 class DataManager:
