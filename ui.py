@@ -1,5 +1,6 @@
 from tkinter import Tk, filedialog, Canvas, PhotoImage, Label, ttk, Button, IntVar, Radiobutton, Scale, Spinbox,\
     StringVar, messagebox, Listbox
+import customtkinter
 from image_processing import ImageProcess
 from data import DataManager
 from PIL import Image, ImageTk
