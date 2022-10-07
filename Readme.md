@@ -1,3 +1,5 @@
+![Interface Image](images/interface.jpg)
+
 H2O Mark is a UI watermark software based on Tkinter.
 It has basics features to assign single or multiple images to the process of watermarking them.
 You can adjust the watermark size,Opacity, and place it in 5 different positions.
