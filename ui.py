@@ -192,7 +192,7 @@ class AppInterface:
         watermark = ImageTk.PhotoImage(Image.open(self.data.reading_data("watermark")).resize((100, 100)))
         self.watermark_canvas.create_image(50, 50, image=watermark)
         self.spin_label = customtkinter.CTkLabel(text="Watermark Size Percentage",
-                                                 text_color="white").place(x=100, y=550)
+                                                 text_color="white").place(x=100, y=545)
         self.watermark_canvas.mainloop()
 
     def preview_image(self, first=0):
