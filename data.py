@@ -1,20 +1,19 @@
 import json
 import os
 
-
 default = {
-        "images": [],
-        "watermark": "",
-        "opacity": 50,
-        "position": 3,
-        "out_folder": "output images",
-        "format": "jpeg",
-        "size": "100",
-        "select": 0,
-    }
+    "images": [],
+    "watermark": "",
+    "opacity": 50,
+    "position": 3,
+    "out_folder": "output images",
+    "format": "jpeg",
+    "size": "100",
+    "select": 0,
+}
+
 
 class DataManager:
-
     def default_set(self):
         """Creates default settings inside a .json file if they don't exist previously."""
         try:
